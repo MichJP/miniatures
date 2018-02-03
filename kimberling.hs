@@ -1,3 +1,5 @@
+import Control.Monad
+
 interleave :: [a] -> [a] -> [a]
 interleave [] rs = rs
 interleave ls [] = reverse ls
@@ -11,6 +13,10 @@ getNextState (buffer, acc) i = (buffer', acc')
         buffer' = interleave (reverse left) right
         acc' = item:acc
 
-getSeq :: Int -> [Int]
-getSeq n = reverse . snd $ foldl getNextState ([1..], []) [0..n]
+
+getSeq :: Int -> [a] -> [a]
+getSeq n input = reverse . snd $ foldl getNextState (input, []) [0..n]
+
+main = mapM_ (putStrLn . show) $ getSeq 100 input
+  where input = cycle [1, 2, 3, 4, 5]
 
