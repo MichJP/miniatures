@@ -1,7 +1,7 @@
 Require Import List.
 Require Import Nat.
-Require Import Lt.
-Require Import Compare_dec.
+(* Require Import Lt. *)
+(* Require Import Compare_dec. *)
 Require Import Bool.
 
 Import ListNotations.
@@ -38,14 +38,14 @@ Proof.
   reflexivity.
 Qed.
 
-Lemma zero_less_than_one : 0 < 1.
+(* Lemma zero_less_than_one : 0 < 1.
 Proof.
   assert (0 <> 1).
   - discriminate.
   - apply (neq_0_lt 1 H).
-Qed.
+Qed. *)
 
-Lemma singleton_has_elem : forall (l : list Pebble), length l = 1 -> exists (k : Pebble), In k l.
+(* Lemma singleton_has_elem : forall (l : list Pebble), length l = 1 -> exists (k : Pebble), In k l.
 Proof.
   intros.
   generalize zero_less_than_one; intro.
@@ -54,24 +54,24 @@ Proof.
   intros.
   exists (@nth Pebble 0 l Red).
   apply H1.
-Qed.
+Qed. *)
 
-Lemma next_red_idem : forall (a : Pebble) (jar : list Pebble), next a (Red :: jar) = next a jar.
+(* Lemma next_red_idem : forall (a : Pebble) (jar : list Pebble), next a (Red :: jar) = next a jar.
 Proof.
   reflexivity.
-Qed.
+Qed. *)
 
-Lemma next_green_involutive : forall (a : Pebble) (jar : list Pebble), next a (Green :: Green :: jar) = next a jar.
+(* Lemma next_green_involutive : forall (a : Pebble) (jar : list Pebble), next a (Green :: Green :: jar) = next a jar.
 Proof.
   intros.
   simpl.
   rewrite flipColor_involutive.
   reflexivity.
-Qed.
+Qed. *)
 
 Definition Pebble_eq_Green_bool (a : Pebble) : bool := if Pebble_eq_dec Green a then true else false.
 
-Lemma next_red_idem_list : forall (a : Pebble) (jar : list Pebble), next a (filter Pebble_eq_Green_bool jar) = next a jar.
+(* Lemma next_red_idem_list : forall (a : Pebble) (jar : list Pebble), next a (filter Pebble_eq_Green_bool jar) = next a jar.
 Proof.
   intros.
   generalize dependent a.
@@ -82,32 +82,32 @@ Proof.
     + simpl.
       intro.
       apply IHjar.
-Qed.
+Qed. *)
 
-Lemma next_succ : forall (jar : list Pebble) (a : Pebble), next a jar = next (flipColor a) (Green :: jar).
+(* Lemma next_succ : forall (jar : list Pebble) (a : Pebble), next a jar = next (flipColor a) (Green :: jar).
 Proof.
   induction jar.
   - destruct a.
     + reflexivity.
     + reflexivity.
   - destruct a0; destruct a; try reflexivity.
-Qed.
+Qed. *)
 
-Lemma next_idem : forall (jar : list Pebble) (a : Pebble), next a jar = next a (Red :: jar).
+(* Lemma next_idem : forall (jar : list Pebble) (a : Pebble), next a jar = next a (Red :: jar).
 Proof.
   reflexivity.
-Qed.
+Qed. *)
 
-Lemma next_succ_succ : forall (jar : list Pebble) (a : Pebble), next a jar = next a (Green :: Green :: jar).
+(* Lemma next_succ_succ : forall (jar : list Pebble) (a : Pebble), next a jar = next a (Green :: Green :: jar).
 Proof.
   intros.
   generalize (next_succ (Green :: jar) (flipColor a)); intro.
   rewrite flipColor_involutive in H.
   rewrite <- H.
   apply next_succ.
-Qed.
+Qed. *)
 
-Lemma count_length : forall jar : list Pebble, count_occ Pebble_eq_dec jar Green = length (filter Pebble_eq_Green_bool jar).
+(* Lemma count_length : forall jar : list Pebble, count_occ Pebble_eq_dec jar Green = length (filter Pebble_eq_Green_bool jar).
 Proof.
   induction jar.
   - reflexivity.
@@ -116,7 +116,7 @@ Proof.
     + simpl.
       rewrite IHjar.
       reflexivity.
-Qed.
+Qed. *)
 
 Lemma next_length : forall (jar : list Pebble) (a : Pebble), length (next a jar) = 1.
 Proof.
@@ -190,15 +190,15 @@ Proof.
     + apply H0.
 Qed.
 
-Lemma n_less_than_succ : forall (n : nat), n < S n.
+(* Lemma n_less_than_succ : forall (n : nat), n < S n.
 Proof.
   induction n.
   - apply zero_less_than_one.
   - apply lt_n_S.
     apply IHn.
-Qed.
+Qed. *)
 
-Lemma list_range : forall (n : nat), exists (l : list nat), length l = n /\ forall (m : nat), m < n -> In m l.
+(* Lemma list_range : forall (n : nat), exists (l : list nat), length l = n /\ forall (m : nat), m < n -> In m l.
 Proof.
   induction n.
   - exists [].
@@ -238,9 +238,9 @@ Proof.
         }
       * exfalso.
         apply (lt_not_le n m l H1).
-Qed.
+Qed. *)
 
-Lemma singleton_bin : forall (jar : list Pebble), length jar = 1 -> jar = [Red] \/ jar = [Green].
+(* Lemma singleton_bin : forall (jar : list Pebble), length jar = 1 -> jar = [Red] \/ jar = [Green].
 Proof.
   intros.
   generalize (singleton_has_elem jar H); intro.
@@ -251,14 +251,14 @@ Proof.
     apply (singleton_property Red jar H H0).
   - right.
     apply (singleton_property Green jar H H0).
-Qed.
+Qed. *)
 
-Lemma red_idem : forall (a : Pebble) (jar : list Pebble), next a (Red :: jar) = [a] -> next a jar = [a].
+(* Lemma red_idem : forall (a : Pebble) (jar : list Pebble), next a (Red :: jar) = [a] -> next a jar = [a].
 Proof.
   intros.
   rewrite <- H.
   reflexivity.
-Qed.
+Qed. *)
 
 Lemma next_inj1 : forall (jar : list Pebble), next Red jar = [Red] -> next Green jar = [Green].
 Proof.
@@ -328,7 +328,7 @@ Proof.
       apply next_inj2.
 Qed.
 
-Lemma flipColor_comm : forall (a : Pebble) (jar : list Pebble), next a jar = [a] -> next (flipColor a) jar = [flipColor a].
+(* Lemma flipColor_comm : forall (a : Pebble) (jar : list Pebble), next a jar = [a] -> next (flipColor a) jar = [flipColor a].
 Proof.
   intros.
   generalize dependent a.
@@ -351,9 +351,9 @@ Proof.
         simpl in H.
         apply flipColor_comm_part2.
         apply H.
-Qed.
+Qed. *)
 
-Lemma res_flipColor : forall (a : Pebble) (jar : list Pebble), next (flipColor a) jar = [a] -> next a jar = [flipColor a].
+(* Lemma res_flipColor : forall (a : Pebble) (jar : list Pebble), next (flipColor a) jar = [a] -> next a jar = [flipColor a].
 Proof.
   intro a.
   induction jar.
@@ -370,9 +370,9 @@ Proof.
       apply flipColor_comm.
       rewrite flipColor_involutive in H.
       apply H.
-Qed.
+Qed. *)
 
-Lemma flipColor_res : forall (a : Pebble) (jar : list Pebble), next a jar = [a] -> next (flipColor a) jar = [flipColor a].
+(* Lemma flipColor_res : forall (a : Pebble) (jar : list Pebble), next a jar = [a] -> next (flipColor a) jar = [flipColor a].
 Proof.
   intro a.
   induction jar.
@@ -388,9 +388,9 @@ Proof.
       rewrite flipColor_involutive.
       apply res_flipColor.
       apply H.
-Qed.
+Qed. *)
 
-Lemma next_res : forall (a : Pebble) (jar : list Pebble), next a jar = [Red] \/ next a jar = [Green].
+(* Lemma next_res : forall (a : Pebble) (jar : list Pebble), next a jar = [Red] \/ next a jar = [Green].
 Proof.
   intro a.
   induction jar.
@@ -425,7 +425,7 @@ Proof.
           apply next_inj2.
           apply H.
         }
-Qed.
+Qed. *)
 
 Lemma run1_res : forall (jar : list Pebble), run1 jar = [Red] \/ run1 jar = [Green].
 Proof.
@@ -435,32 +435,32 @@ Proof.
   - apply next_singleton.
 Qed.
 
-Lemma even_not_odd : forall (n : nat), even n = true -> odd n = false.
+(* Lemma even_not_odd : forall (n : nat), even n = true -> odd n = false.
 Proof.
   intros.
   unfold odd.
   rewrite H.
   reflexivity.
-Qed.
+Qed. *)
 
-Lemma not_even_odd : forall (n : nat), even n = false -> odd n = true.
+(* Lemma not_even_odd : forall (n : nat), even n = false -> odd n = true.
 Proof.
   intros.
   unfold odd.
   rewrite H.
   reflexivity.
-Qed.
+Qed. *)
 
-Lemma run2_even : forall jar : list Pebble, run2 jar = [Red] -> even (count_occ Pebble_eq_dec jar Green) = true.
+(* Lemma run2_even : forall jar : list Pebble, run2 jar = [Red] -> even (count_occ Pebble_eq_dec jar Green) = true.
 Proof.
   intros.
   unfold run2 in H.
   destruct (even (count_occ Pebble_eq_dec jar Green)).
   - reflexivity.
   - inversion H.
-Qed.
+Qed. *)
 
-Lemma run2_odd : forall jar : list Pebble, run2 jar = [Green] -> odd (count_occ Pebble_eq_dec jar Green) = true.
+(* Lemma run2_odd : forall jar : list Pebble, run2 jar = [Green] -> odd (count_occ Pebble_eq_dec jar Green) = true.
 Proof.
   intros.
   unfold run2 in H.
@@ -468,7 +468,7 @@ Proof.
   - inversion H.
   - apply not_even_odd.
     apply H0.
-Qed.
+Qed. *)
 
 Lemma negb_true_false : negb true = false.
 Proof.
@@ -512,20 +512,20 @@ Proof.
   apply H.
 Qed.
 
-Lemma even_succ_succ_even : forall (n : nat), even n = true -> even (S (S n)) = true.
+(* Lemma even_succ_succ_even : forall (n : nat), even n = true -> even (S (S n)) = true.
 Proof.
   intros.
   simpl.
   apply H.
-Qed.
+Qed. *)
 
-Lemma odd_succ_succ_odd : forall (n : nat), odd n = true -> odd (S (S n)) = true.
+(* Lemma odd_succ_succ_odd : forall (n : nat), odd n = true -> odd (S (S n)) = true.
 Proof.
   unfold odd.
   intros.
   simpl.
   apply H.
-Qed.
+Qed. *)
 
 Lemma bool_modus_tollens : forall (a b : bool), (a = true -> b = true) -> b = false -> a = false.
 Proof.
@@ -539,7 +539,7 @@ Proof.
   - reflexivity.
 Qed.
 
-Lemma bool_modus_tollens_neg : forall (a b : bool), (a = false -> b = false) -> b = true -> a = true.
+(* Lemma bool_modus_tollens_neg : forall (a b : bool), (a = false -> b = false) -> b = true -> a = true.
 Proof.
   intros.
   destruct a; destruct b.
@@ -549,7 +549,7 @@ Proof.
     apply H.
     reflexivity.
   - apply H0.
-Qed.
+Qed. *)
 
 Lemma not_even_succ_even : forall (n : nat), even n = false -> even (S n) = true.
 Proof.
@@ -568,7 +568,7 @@ Proof.
     + apply H.
 Qed.
 
-Lemma succ_even_succ : forall (n : nat), even (S n) = true -> odd n = true.
+(* Lemma succ_even_succ : forall (n : nat), even (S n) = true -> odd n = true.
 Proof.
   unfold odd.
   induction n.
@@ -586,7 +586,7 @@ Proof.
       inversion H0.
     + rewrite H.
       reflexivity.
-Qed.
+Qed. *)
 
 Lemma even_succ_odd : forall (n : nat), even n = true -> odd (S n) = true.
 Proof.
@@ -611,7 +611,7 @@ Proof.
       reflexivity.
 Qed.
 
-Lemma odd_succ_even : forall (n : nat), odd n = true -> even (S n) = true.
+(* Lemma odd_succ_even : forall (n : nat), odd n = true -> even (S n) = true.
 Proof.
   intros.
   unfold odd in H.
@@ -620,17 +620,17 @@ Proof.
   simpl in H.
   apply not_even_succ_even.
   apply H.
-Qed.
+Qed. *)
 
-Lemma succ_succ_odd_odd : forall (n : nat), odd (S (S n)) = true -> odd n = true.
+(* Lemma succ_succ_odd_odd : forall (n : nat), odd (S (S n)) = true -> odd n = true.
 Proof.
   unfold odd.
   simpl.
   intros.
   apply H.
-Qed.
+Qed. *)
 
-Lemma succ_odd_even : forall (n : nat), odd (S n) = true -> even n = true.
+(* Lemma succ_odd_even : forall (n : nat), odd (S n) = true -> even n = true.
 Proof.
   induction n; try reflexivity.
   intro.
@@ -642,7 +642,7 @@ Proof.
     inversion H0.
   - apply H.
 Qed.
-
+ *)
 Lemma succ_even : forall (n : nat), even (S n) = true -> even n = false.
 Proof.
   induction n.
@@ -666,7 +666,7 @@ Proof.
     apply H.
 Qed.
 
-Lemma run2_res : forall (jar : list Pebble), run2 jar = [Red] \/ run2 jar = [Green].
+(* Lemma run2_res : forall (jar : list Pebble), run2 jar = [Red] \/ run2 jar = [Green].
 Proof.
   induction jar.
   - left.
@@ -708,9 +708,9 @@ Proof.
           { rewrite H0.
             reflexivity.
           }
-Qed.
+Qed. *)
 
-Lemma bin_mod_toll : forall (jar : list Pebble) (a b : Pebble), (next a jar = [Red] -> next b jar = [Red]) -> next b jar = [Green] -> next a jar = [Green].
+(* Lemma bin_mod_toll : forall (jar : list Pebble) (a b : Pebble), (next a jar = [Red] -> next b jar = [Red]) -> next b jar = [Green] -> next a jar = [Green].
 Proof.
   intros.
   destruct a; destruct b.
@@ -724,9 +724,9 @@ Proof.
     apply flipColor_comm_part2.
     apply H0.
   - apply H0.
-Qed.
+Qed. *)
 
-Lemma flipColor_nofix : forall (a : Pebble), ~ a = flipColor a.
+(* Lemma flipColor_nofix : forall (a : Pebble), ~ a = flipColor a.
 Proof.
   destruct a.
   - simpl.
@@ -735,39 +735,39 @@ Proof.
   - simpl.
     intro.
     inversion H.
-Qed.
+Qed. *)
 
-Definition containsEvenGreen (jar : list Pebble) := even (length (filter Pebble_eq_Green_bool jar)) = true.
+(* Definition containsEvenGreen (jar : list Pebble) := even (length (filter Pebble_eq_Green_bool jar)) = true.
 Definition containsOddGreen (jar : list Pebble) := odd (length (filter Pebble_eq_Green_bool jar)) = true.
-
-Lemma subSubLemma1 : forall (jar : list Pebble), length (filter Pebble_eq_Green_bool (Green :: jar)) = S (length (filter Pebble_eq_Green_bool jar)).
+ *)
+(* Lemma subSubLemma1 : forall (jar : list Pebble), length (filter Pebble_eq_Green_bool (Green :: jar)) = S (length (filter Pebble_eq_Green_bool jar)).
 Proof.
   reflexivity.
-Qed.
+Qed. *)
 
-Lemma subSubLemma2 : forall (jar : list Pebble), next Green jar = [Green] -> even (length (filter Pebble_eq_Green_bool jar)) = true.
+(* Lemma subSubLemma2 : forall (jar : list Pebble), next Green jar = [Green] -> even (length (filter Pebble_eq_Green_bool jar)) = true.
 Proof.
   intro.
   induction (length (filter Pebble_eq_Green_bool jar)); try reflexivity.
   - intro.
-Admitted.
+Admitted. *)
 
-Lemma subSubLemma3 : forall (jar : list Pebble), even (length (filter Pebble_eq_Green_bool jar)) = true -> even (length (filter Pebble_eq_Green_bool (Green :: Green :: jar))) = true.
+(* Lemma subSubLemma3 : forall (jar : list Pebble), even (length (filter Pebble_eq_Green_bool jar)) = true -> even (length (filter Pebble_eq_Green_bool (Green :: Green :: jar))) = true.
 Proof.
   intros.
   apply H.
-Qed.
+Qed. *)
 
-Lemma subSubLemma4 : forall (jar : list Pebble), containsOddGreen (Green :: jar) -> containsEvenGreen jar.
+(* Lemma subSubLemma4 : forall (jar : list Pebble), containsOddGreen (Green :: jar) -> containsEvenGreen jar.
 Proof.
   unfold containsEvenGreen, containsOddGreen.
   intros.
   simpl in H.
   apply succ_odd_even.
   apply H.
-Qed.
+Qed. *)
 
-Lemma subSubLemma5 : forall (jar : list Pebble) (a : Pebble), (containsEvenGreen jar -> next a jar = [a]) -> next a jar = [flipColor a] -> containsOddGreen jar.
+(* Lemma subSubLemma5 : forall (jar : list Pebble) (a : Pebble), (containsEvenGreen jar -> next a jar = [a]) -> next a jar = [flipColor a] -> containsOddGreen jar.
 Proof.
   unfold containsEvenGreen, containsOddGreen.
   induction jar.
@@ -775,9 +775,9 @@ Proof.
     intros.
     inversion H0.
     inversion H2.
-Admitted.
+Admitted. *)
 
-Lemma subLemma1 : forall (jar : list Pebble), even (length (filter Pebble_eq_Green_bool (Green :: jar))) = false -> even (length (filter Pebble_eq_Green_bool jar)) = true.
+(* Lemma subLemma1 : forall (jar : list Pebble), even (length (filter Pebble_eq_Green_bool (Green :: jar))) = false -> even (length (filter Pebble_eq_Green_bool jar)) = true.
 Proof.
   induction jar.
   - reflexivity.
@@ -793,22 +793,22 @@ Proof.
       rewrite subSubLemma1.
       apply not_even_succ_even.
       apply H.
-Qed.
+Qed. *)
 
-Lemma idk1 : forall (jar : list Pebble) (a : Pebble), next a jar = [a] -> next a (Green :: Green :: jar) = [a].
+(* Lemma idk1 : forall (jar : list Pebble) (a : Pebble), next a jar = [a] -> next a (Green :: Green :: jar) = [a].
 Proof.
   intros.
   simpl.
   rewrite flipColor_involutive.
   apply H.
-Qed.
+Qed. *)
 
-Lemma idk2 : forall (a : Pebble), next a [] = [a].
+(* Lemma idk2 : forall (a : Pebble), next a [] = [a].
 Proof.
   reflexivity.
-Qed.
+Qed. *)
 
-Lemma idk3 : forall (jar : list Pebble) (a : Pebble), next a jar = [a] -> next a (Green :: jar) = [flipColor a].
+(* Lemma idk3 : forall (jar : list Pebble) (a : Pebble), next a jar = [a] -> next a (Green :: jar) = [flipColor a].
 Proof.
   intros.
   simpl.
@@ -819,9 +819,9 @@ Proof.
   - simpl.
     apply next_inj2.
     apply H.
-Qed.
+Qed. *)
 
-Lemma idk4 : forall (jar : list Pebble) (a b : Pebble), next a jar = [b] -> next a (Green :: jar) = [flipColor b].
+(* Lemma idk4 : forall (jar : list Pebble) (a b : Pebble), next a jar = [b] -> next a (Green :: jar) = [flipColor b].
 Proof.
   intros.
   simpl.
@@ -834,9 +834,9 @@ Proof.
     apply flipColor_comm_part1, H.
   - simpl.
     apply next_inj2, H.
-Qed.
+Qed. *)
 
-Lemma idk5 : forall (jar : list Pebble) (a b : Pebble), next a jar = [b] -> next a (filter Pebble_eq_Green_bool jar) = [b].
+(* Lemma idk5 : forall (jar : list Pebble) (a b : Pebble), next a jar = [b] -> next a (filter Pebble_eq_Green_bool jar) = [b].
 Proof.
   induction jar.
   - intros.
@@ -850,16 +850,16 @@ Proof.
     + simpl.
       simpl in H.
       apply IHjar, H.
-Qed.
+Qed. *)
 
-Lemma idk6 : forall (jar : list Pebble) (a b : Pebble), next a jar = [b] -> next a (Red :: jar) = [b].
+(* Lemma idk6 : forall (jar : list Pebble) (a b : Pebble), next a jar = [b] -> next a (Red :: jar) = [b].
 Proof.
   intros.
   simpl.
   apply H.
-Qed.
+Qed. *)
 
-Lemma idk7 : forall (jar : list Pebble) (a b : Pebble), next a (filter Pebble_eq_Green_bool jar) = [b] -> next a jar = [b].
+(* Lemma idk7 : forall (jar : list Pebble) (a b : Pebble), next a (filter Pebble_eq_Green_bool jar) = [b] -> next a jar = [b].
 Proof.
   induction jar.
   - intros.
@@ -873,9 +873,9 @@ Proof.
     + simpl.
       simpl in H.
       apply IHjar, H.
-Qed.
+Qed. *)
 
-Lemma idk8 : forall (jar : list Pebble) (a b c : Pebble), next a jar = [b] -> next a (c :: jar) = [flipColor b] -> c = Green.
+(* Lemma idk8 : forall (jar : list Pebble) (a b c : Pebble), next a jar = [b] -> next a (c :: jar) = [flipColor b] -> c = Green.
 Proof.
   induction jar.
   - intros.
@@ -895,9 +895,9 @@ Proof.
     simpl in H, H0;
     rewrite H in H0;
     inversion H0.
-Qed.
+Qed. *)
 
-Lemma idk9 : forall (jar : list Pebble) (a : Pebble), ~ next a jar = next (flipColor a) jar.
+(* Lemma idk9 : forall (jar : list Pebble) (a : Pebble), ~ next a jar = next (flipColor a) jar.
 Proof.
   induction jar.
   - simpl.
@@ -911,9 +911,9 @@ Proof.
     simpl in H;
     apply IHjar in H;
     apply H.
-Qed.
+Qed. *)
 
-Lemma idk10 : forall (jar : list Pebble) (a b c : Pebble), next a jar = [b] -> next a (c :: jar) = [b] -> c = Red.
+(* Lemma idk10 : forall (jar : list Pebble) (a b c : Pebble), next a jar = [b] -> next a (c :: jar) = [b] -> c = Red.
 Proof.
   induction jar.
   - intros.
@@ -931,17 +931,17 @@ Proof.
     rewrite <- H in H0;
     apply idk9 in H0;
     contradiction.
-Qed.
+Qed. *)
 
-Lemma subLemma2 : forall (jar : list Pebble), even (length (filter Pebble_eq_Green_bool jar)) = true -> next Green jar = [Green].
+(* Lemma subLemma2 : forall (jar : list Pebble), even (length (filter Pebble_eq_Green_bool jar)) = true -> next Green jar = [Green].
 Proof.
   intro.
   destruct (next_res Green jar).
   - intro.
   induction jar; try reflexivity.
-Admitted.
+Admitted. *)
 
-Lemma subLemma3 : forall (jar : list Pebble), even (length (filter Pebble_eq_Green_bool jar)) = false -> next Red jar = [Green].
+(* Lemma subLemma3 : forall (jar : list Pebble), even (length (filter Pebble_eq_Green_bool jar)) = false -> next Red jar = [Green].
 Proof.
   induction jar.
   - simpl.
@@ -956,9 +956,9 @@ Proof.
     + simpl.
       apply subLemma1 in H.
       simpl in H.
-Admitted.
+Admitted. *)
 
-Lemma lemma1 : forall (jar : list Pebble) (a : Pebble), even (length (filter Pebble_eq_Green_bool jar)) = true -> next a jar = [a].
+(* Lemma lemma1 : forall (jar : list Pebble) (a : Pebble), even (length (filter Pebble_eq_Green_bool jar)) = true -> next a jar = [a].
 Proof.
   induction jar.
   - reflexivity.
@@ -974,7 +974,7 @@ Proof.
         apply flipColor_comm_part2.
         simpl.
         simpl in H.
-Admitted.
+Admitted. *)
 
 Lemma lemma2 : forall (jar : list Pebble), run1 jar = [Red] -> next Green jar = [Green].
 Proof.
