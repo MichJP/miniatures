@@ -52,7 +52,8 @@ Qed.
 
 Lemma next_inj1 : forall (jar : list Pebble), next Red jar = Red -> next Green jar = Green.
 Proof.
-  induction jar; try reflexivity.
+  induction jar;
+  try reflexivity.
   intros.
   destruct a.
   - simpl.
@@ -69,7 +70,8 @@ Qed.
 
 Lemma next_inj2 : forall (jar : list Pebble), next Green jar = Green -> next Red jar = Red.
 Proof.
-  induction jar; try reflexivity.
+  induction jar;
+  try reflexivity.
   intros.
   destruct a.
   - simpl.
@@ -141,44 +143,41 @@ Qed.
 
 Lemma not_odd_even : forall (n : nat), odd n = false -> even n = true.
 Proof.
-  intros.
-  unfold odd in H.
-  rewrite <- (negb_true_false) in H.
-  apply negb_cancel in H.
-  apply H.
+  unfold odd.
+  intros n H.
+  rewrite <- negb_true_false in H.
+  apply (negb_cancel _ _ H).
 Qed.
 
 Lemma odd_not_even : forall (n : nat), odd n = true -> even n = false.
 Proof.
-  intros.
-  unfold odd in H.
+  unfold odd.
+  intros n H.
   rewrite <- negb_false_true in H.
-  apply negb_cancel in H.
-  apply H.
+  apply (negb_cancel _ _ H).
 Qed.
 
 Lemma bool_modus_tollens : forall (a b : bool), (a = true -> b = true) -> b = false -> a = false.
 Proof.
-  intros.
-  destruct a; destruct b.
+  intros a b H H0.
+  destruct a;
+  destruct b;
+  try reflexivity.
   - apply H0.
   - symmetry.
     apply H.
     reflexivity.
-  - reflexivity.
-  - reflexivity.
 Qed.
 
 Lemma not_even_succ_even : forall (n : nat), even n = false -> even (S n) = true.
 Proof.
   induction n.
-  - intro.
+  - intro H.
     inversion H.
-  - intro.
-    simpl.
+  - intro H.
     apply not_odd_even.
     apply (bool_modus_tollens (odd n) (even (S n))).
-    + intro.
+    + intro H0.
       apply odd_not_even in H0.
       apply IHn in H0.
       rewrite H in H0.
@@ -188,25 +187,22 @@ Qed.
 
 Lemma even_succ_odd : forall (n : nat), even n = true -> odd (S n) = true.
 Proof.
-  induction n.
-  - intros.
-    unfold odd.
+  unfold odd.
+  induction n;
+  try reflexivity.
+  intro.
+  simpl.
+  symmetry.
+  apply negb_sym.
+  simpl.
+  apply (bool_modus_tollens (even n) (negb (even (S n)))).
+  - intro H0.
+    apply IHn in H0.
+    rewrite H in H0.
+    inversion H0.
+  - unfold odd.
+    rewrite H.
     reflexivity.
-  - intro.
-    unfold odd.
-    simpl.
-    symmetry.
-    apply negb_sym.
-    simpl.
-    apply (bool_modus_tollens (even n) (odd (S n))).
-    + intro.
-      apply IHn in H0.
-      unfold odd in H0.
-      rewrite H in H0.
-      inversion H0.
-    + unfold odd.
-      rewrite H.
-      reflexivity.
 Qed.
 
 Lemma succ_even : forall (n : nat), even (S n) = true -> even n = false.
