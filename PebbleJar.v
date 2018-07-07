@@ -50,6 +50,14 @@ Proof.
     reflexivity.
 Qed.
 
+Lemma run1_res : forall (jar : list Pebble), run1 jar = Red \/ run1 jar = Green.
+Proof.
+  destruct jar.
+  - left.
+    reflexivity.
+  - apply next_res.
+Qed.
+
 Lemma next_inj1 : forall (jar : list Pebble), next Red jar = Red -> next Green jar = Green.
 Proof.
   induction jar;
@@ -115,120 +123,45 @@ Proof.
       apply next_inj2.
 Qed.
 
-Lemma run1_res : forall (jar : list Pebble), run1 jar = Red \/ run1 jar = Green.
+Lemma bool_modus_tollens : forall (a b c d : bool), (a = c -> b = d) -> b = negb d -> a = negb c.
 Proof.
-  destruct jar.
-  - left.
-    reflexivity.
-  - apply next_res.
-Qed.
-
-Lemma negb_true_false : negb true = false.
-Proof.
-  reflexivity.
-Qed.
-
-Lemma negb_false_true : negb false = true.
-Proof.
-  reflexivity.
-Qed.
-
-Lemma negb_cancel : forall (a b : bool), negb a = negb b -> a = b.
-Proof.
-  destruct a, b;
+  intros a b c d H H0.
+  destruct a, b, c, d;
   try reflexivity;
-  intro H;
-  inversion H.
-Qed.
-
-Lemma not_odd_even : forall (n : nat), odd n = false -> even n = true.
-Proof.
-  unfold odd.
-  intros n H.
-  rewrite <- negb_true_false in H.
-  apply (negb_cancel _ _ H).
-Qed.
-
-Lemma odd_not_even : forall (n : nat), odd n = true -> even n = false.
-Proof.
-  unfold odd.
-  intros n H.
-  rewrite <- negb_false_true in H.
-  apply (negb_cancel _ _ H).
-Qed.
-
-Lemma bool_modus_tollens : forall (a b : bool), (a = true -> b = true) -> b = false -> a = false.
-Proof.
-  intros a b H H0.
-  destruct a;
-  destruct b;
-  try reflexivity.
-  - apply H0.
-  - symmetry.
-    apply H.
-    reflexivity.
+  try apply H0;
+  try inversion H0;
+  try (apply H; reflexivity);
+  symmetry;
+  apply H;
+  reflexivity.
 Qed.
 
 Lemma not_even_succ_even : forall (n : nat), even n = false -> even (S n) = true.
 Proof.
-  induction n.
+  induction n as [ | n' IHn'].
   - intro H.
     inversion H.
   - intro H.
-    apply not_odd_even.
-    apply (bool_modus_tollens (odd n) (even (S n))).
+    simpl.
+    apply (bool_modus_tollens (even n') (even (S n')) false true).
     + intro H0.
-      apply odd_not_even in H0.
-      apply IHn in H0.
-      rewrite H in H0.
-      inversion H0.
+      apply IHn', H0.
     + apply H.
-Qed.
-
-Lemma even_succ_odd : forall (n : nat), even n = true -> odd (S n) = true.
-Proof.
-  unfold odd.
-  induction n;
-  try reflexivity.
-  intro.
-  simpl.
-  symmetry.
-  apply negb_sym.
-  simpl.
-  apply (bool_modus_tollens (even n) (negb (even (S n)))).
-  - intro H0.
-    apply IHn in H0.
-    rewrite H in H0.
-    inversion H0.
-  - unfold odd.
-    rewrite H.
-    reflexivity.
-Qed.
-
-Lemma succ_even : forall (n : nat), even (S n) = true -> even n = false.
-Proof.
-  induction n.
-  - intros.
-    simpl in H.
-    inversion H.
-  - intro.
-    simpl in H.
-    apply odd_not_even.
-    apply even_succ_odd.
-    apply H.
 Qed.
 
 Lemma even_succ : forall (n : nat), even n = true -> even (S n) = false.
 Proof.
-  induction n.
-  - reflexivity.
-  - intros.
-    simpl.
-    apply succ_even.
-    apply H.
+  induction n as [ | n' IHn'];
+  try reflexivity.
+  intros.
+  simpl.
+  apply (bool_modus_tollens (even n') (even (S n')) true false).
+  - intro H0.
+    apply IHn', H0.
+  - apply H.
 Qed.
 
-Lemma lemma2 : forall (jar : list Pebble), run1 jar = Red -> next Green jar = Green.
+Lemma lemma1 : forall (jar : list Pebble), run1 jar = Red -> next Green jar = Green.
 Proof.
   induction jar.
   - reflexivity.
@@ -242,7 +175,7 @@ Proof.
       apply flipColor_comm_part1, H.
 Qed.
 
-Lemma lemma3 : forall (jar : list Pebble), run1 jar = Green -> next Green jar = Red.
+Lemma lemma2 : forall (jar : list Pebble), run1 jar = Green -> next Green jar = Red.
 Proof.
   induction jar.
   - intro.
@@ -257,37 +190,27 @@ Qed.
 
 Theorem th1 : forall jar : list Pebble, run1 jar = run2 jar.
 Proof.
-  intro.
-  induction jar.
-  - reflexivity.
-  - destruct a.
-    + simpl.
-      unfold run2.
-      simpl.
-      unfold run2 in IHjar.
-      rewrite <- IHjar.
-      unfold run1.
-      induction jar; try reflexivity.
-      destruct a; try reflexivity.
-    + unfold run2.
-      simpl (count_occ _ _ _).
-      simpl (run1 _).
-      unfold run2 in IHjar.
-      destruct (run1_res jar).
-      * rewrite H in IHjar.
-        destruct (even (count_occ Pebble_eq_dec jar Green)) eqn:H1.
-        { apply even_succ in H1.
-          rewrite H1.
-          apply lemma2, H.
-        }
-        { inversion IHjar.
-        }
-      * rewrite H in IHjar.
-        destruct (even (count_occ Pebble_eq_dec jar Green)) eqn:H1.
-        { inversion IHjar.
-        }
-        { apply not_even_succ_even in H1.
-          rewrite H1.
-          apply lemma3, H.
-        }
+  unfold run2.
+  induction jar as [ | hd tl IHjar];
+  try reflexivity.
+  destruct hd.
+  - simpl.
+    rewrite <- IHjar.
+    unfold run1.
+    induction tl as [ | hd' tl' _];
+    try reflexivity.
+    destruct hd';
+    try reflexivity.
+  - simpl (count_occ _ _ _).
+    simpl (run1 _).
+    destruct (run1_res tl) as [H | H];
+    destruct (even (count_occ Pebble_eq_dec tl Green)) eqn:H1;
+    rewrite H in IHjar;
+    try inversion IHjar.
+    + apply even_succ in H1.
+      rewrite H1.
+      apply lemma1, H.
+    + apply not_even_succ_even in H1.
+      rewrite H1.
+      apply lemma2, H.
 Qed.
