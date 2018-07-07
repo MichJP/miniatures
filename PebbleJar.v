@@ -6,6 +6,10 @@ Import ListNotations.
 
 Inductive Pebble : Type := Red | Green.
 
+(* Define Pebble_beq and Pebble_eq_dec
+ *   Pebble_beq : Pebble -> Pebble -> bool
+ *   Pebble_eq_dec : forall x y : Pebble, {x = y} + {x <> y}
+ *)
 Scheme Equality for Pebble.
 
 Definition flipColor (pebble : Pebble) : Pebble :=
@@ -35,8 +39,6 @@ Proof.
   destruct a;
   reflexivity.
 Qed.
-
-Definition Pebble_eq_Green_bool (a : Pebble) : bool := if Pebble_eq_dec Green a then true else false.
 
 Lemma next_res : forall (a : Pebble) (jar : list Pebble), next a jar = Red \/ next a jar = Green.
 Proof.
@@ -131,16 +133,10 @@ Qed.
 
 Lemma negb_cancel : forall (a b : bool), negb a = negb b -> a = b.
 Proof.
-  destruct a; destruct b.
-  - reflexivity.
-  - simpl.
-    intro.
-    inversion H.
-  - simpl.
-    intro.
-    inversion H.
-  - intro.
-    reflexivity.
+  destruct a, b;
+  try reflexivity;
+  intro H;
+  inversion H.
 Qed.
 
 Lemma not_odd_even : forall (n : nat), odd n = false -> even n = true.
