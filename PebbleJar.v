@@ -4,6 +4,13 @@ Require Import Bool.
 
 Import ListNotations.
 
+(* Lecture: Reasoning About Programs
+ * Solving 2 problems using programing - Dijkstra, 1990
+ * URL: https://youtu.be/GX3URhx6i2E
+ *
+ * Formalization of the first problem
+ *)
+
 Inductive Pebble : Type := Red | Green.
 
 (* Define Pebble_beq and Pebble_eq_dec
@@ -42,7 +49,7 @@ Qed.
 
 Lemma next_res : forall (a : Pebble) (jar : list Pebble), next a jar = Red \/ next a jar = Green.
 Proof.
-  intros.
+  intros a jar.
   destruct (next a jar).
   - left.
     reflexivity.
@@ -58,69 +65,30 @@ Proof.
   - apply next_res.
 Qed.
 
-Lemma next_inj1 : forall (jar : list Pebble), next Red jar = Red -> next Green jar = Green.
+Lemma next_inj : forall (jar : list Pebble) (a : Pebble), next a jar = a -> next (flipColor a) jar = flipColor a.
 Proof.
-  induction jar;
+  induction jar as [ | hd tl IHjar];
   try reflexivity.
-  intros.
-  destruct a.
-  - simpl.
-    simpl in H.
-    apply IHjar, H.
-  - simpl.
-    simpl in H.
-    destruct (next_res Red jar).
-    + apply IHjar in H0.
-      rewrite H in H0.
-      inversion H0.
-    + apply H0.
+  intros a H.
+  destruct hd, (next_res a tl), a;
+  try apply IHjar, H;
+  try apply H0;
+  apply IHjar in H0;
+  simpl in H, H0;
+  rewrite H in H0;
+  inversion H0.
 Qed.
 
-Lemma next_inj2 : forall (jar : list Pebble), next Green jar = Green -> next Red jar = Red.
+Lemma flipColor_comm : forall (jar : list Pebble) (a : Pebble), next a jar = flipColor a -> next (flipColor a) jar = a.
 Proof.
-  induction jar;
-  try reflexivity.
-  intros.
-  destruct a.
-  - simpl.
-    simpl in H.
-    apply IHjar.
+  induction jar as [ | hd tl IHjar].
+  - symmetry.
     apply H.
-  - simpl.
-    simpl in H.
-    destruct (next_res Green jar).
-    + apply H0.
-    + apply IHjar in H0.
-      rewrite H in H0.
-      inversion H0.
-Qed.
-
-Lemma flipColor_comm_part1 : forall jar : list Pebble, next Green jar = Red -> next Red jar = Green.
-Proof.
-  induction jar.
-  - simpl.
-    intro.
-    symmetry.
-    apply H.
-  - destruct a.
-    + simpl.
-      apply IHjar.
-    + simpl.
-      apply next_inj1.
-Qed.
-
-Lemma flipColor_comm_part2 : forall jar : list Pebble, next Red jar = Green -> next Green jar = Red.
-Proof.
-  induction jar.
-  - simpl.
-    intro.
-    symmetry.
-    apply H.
-  - destruct a.
-    + simpl.
-      apply IHjar.
-    + simpl.
-      apply next_inj2.
+  - destruct hd.
+    + apply IHjar.
+    + intros a H.
+      rewrite <- flipColor_involutive.
+      apply (next_inj tl (flipColor a)), H.
 Qed.
 
 Lemma bool_modus_tollens : forall (a b c d : bool), (a = c -> b = d) -> b = negb d -> a = negb c.
@@ -142,7 +110,6 @@ Proof.
   - intro H.
     inversion H.
   - intro H.
-    simpl.
     apply (bool_modus_tollens (even n') (even (S n')) false true).
     + intro H0.
       apply IHn', H0.
@@ -153,8 +120,7 @@ Lemma even_succ : forall (n : nat), even n = true -> even (S n) = false.
 Proof.
   induction n as [ | n' IHn'];
   try reflexivity.
-  intros.
-  simpl.
+  intro H.
   apply (bool_modus_tollens (even n') (even (S n')) true false).
   - intro H0.
     apply IHn', H0.
@@ -163,29 +129,26 @@ Qed.
 
 Lemma lemma1 : forall (jar : list Pebble), run1 jar = Red -> next Green jar = Green.
 Proof.
-  induction jar.
-  - reflexivity.
-  - intros.
-    destruct a.
-    + simpl.
-      simpl in H.
-      apply next_inj1, H.
-    + simpl.
-      simpl in H.
-      apply flipColor_comm_part1, H.
+  destruct jar as [ | hd tl];
+  try reflexivity.
+  intros H.
+  destruct hd.
+  - apply next_inj in H.
+    apply H.
+  - apply flipColor_comm in H.
+    apply H.
 Qed.
 
 Lemma lemma2 : forall (jar : list Pebble), run1 jar = Green -> next Green jar = Red.
 Proof.
-  induction jar.
-  - intro.
-    inversion H.
-  - destruct a.
-    + simpl.
-      intro.
-      apply flipColor_comm_part2, H.
-    + simpl.
-      apply next_inj2.
+  destruct jar as [ | hd tl];
+  intro H.
+  - inversion H.
+  - destruct hd.
+    + apply flipColor_comm in H.
+      apply H.
+    + apply next_inj in H.
+      apply H.
 Qed.
 
 Theorem th1 : forall jar : list Pebble, run1 jar = run2 jar.
